@@ -4,52 +4,52 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
-	"sr-example/example-service/model"
-	"sr-example/example-service/service"
+	"sr-athlete/athlete-service/model"
+	"sr-athlete/athlete-service/service"
 )
 
-func exampleController() {
-	router.GET("/example", getExamples)
-	router.GET("/example/:id", getExample)
-	router.DELETE("/example/:id", removeExample)
-	router.POST("/example", addExample)
-	router.PUT("/example", updateExample)
+func athleteController() {
+	router.GET("/athlete", getAthletes)
+	router.GET("/athlete/:id", getAthlete)
+	router.DELETE("/athlete/:id", removeAthlete)
+	router.POST("/athlete", addAthlete)
+	router.PUT("/athlete", updateAthlete)
 }
 
-func getExamples(c *gin.Context) {
-	examples, err := service.GetExamples()
+func getAthletes(c *gin.Context) {
+	athletes, err := service.GetAthletes()
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, examples)
+	c.IndentedJSON(http.StatusOK, athletes)
 }
 
-func getExample(c *gin.Context) {
+func getAthlete(c *gin.Context) {
 	id, convErr := primitive.ObjectIDFromHex(c.Param("id"))
 	if convErr != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
 		return
 	}
 
-	example, err := service.GetExampleById(id)
+	athlete, err := service.GetAthleteById(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, example)
+	c.IndentedJSON(http.StatusOK, athlete)
 }
 
-func removeExample(c *gin.Context) {
+func removeAthlete(c *gin.Context) {
 	id, convErr := primitive.ObjectIDFromHex(c.Param("id"))
 	if convErr != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given id was not of type ObjectID"})
 		return
 	}
 
-	err := service.RemoveExampleById(id)
+	err := service.RemoveAthleteById(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -58,14 +58,14 @@ func removeExample(c *gin.Context) {
 	c.IndentedJSON(http.StatusNoContent, "")
 }
 
-func addExample(c *gin.Context) {
-	var example model.Example
-	if err := c.BindJSON(&example); err != nil {
+func addAthlete(c *gin.Context) {
+	var athlete model.Athlete
+	if err := c.BindJSON(&athlete); err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	r, err := service.AddExample(example)
+	r, err := service.AddAthlete(athlete)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -74,14 +74,14 @@ func addExample(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, r)
 }
 
-func updateExample(c *gin.Context) {
-	var example model.Example
-	if err := c.BindJSON(&example); err != nil {
+func updateAthlete(c *gin.Context) {
+	var athlete model.Athlete
+	if err := c.BindJSON(&athlete); err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	r, err := service.UpdateExample(example)
+	r, err := service.UpdateAthlete(athlete)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

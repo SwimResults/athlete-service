@@ -1,12 +1,31 @@
-# example-service
+# athlete-service
 
-determining if go should be used for apis and microservices
+- sportlers with YoB and Club
+- Teams
 
-| features | Java | Go  |
-|----------|------|-----|
-| repo, service, controller structure   |  x   | x   |
-| swagger |x| ?   |
-| spring auth |x| ?   |
-| jdbc |x| x   |
-| hibernate |x| x   |
-| junit tests |x| x   |
+## Models
+
+### Athlete
+
+- id
+- name
+- year
+- team (id)
+
+### Team
+
+- id
+- name
+- aliases
+
+
+## API Endpoints
+
+    [GIN-debug] GET    /athlete                  --> sr-athlete/athlete-service/controller.getAthletes
+    [GIN-debug] GET    /athlete/:id              --> sr-athlete/athlete-service/controller.getAthlete
+    [GIN-debug] DELETE /athlete/:id              --> sr-athlete/athlete-service/controller.removeAthlete
+    [GIN-debug] POST   /athlete                  --> sr-athlete/athlete-service/controller.addAthlete
+    [GIN-debug] PUT    /athlete                  --> sr-athlete/athlete-service/controller.updateAthlete
+    [GIN-debug] GET    /team                     --> sr-athlete/athlete-service/controller.getTeams
+    [GIN-debug] GET    /team/:id                 --> sr-athlete/athlete-service/controller.getTeam
+    [GIN-debug] POST   /team                     --> sr-athlete/athlete-service/controller.addTeam

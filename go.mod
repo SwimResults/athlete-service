@@ -1,4 +1,4 @@
-module sr-example/example-service
+module sr-athlete/athlete-service
 
 go 1.18
 

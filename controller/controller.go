@@ -10,9 +10,10 @@ var router = gin.Default()
 
 func Run() {
 
-	exampleController()
+	athleteController()
+	teamController()
 
-	port := os.Getenv("SR_EXAMPLE_PORT")
+	port := os.Getenv("SR_ATHLETE_PORT")
 
 	err := router.Run(":" + port)
 	if err != nil {
