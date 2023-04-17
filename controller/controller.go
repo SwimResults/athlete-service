@@ -21,6 +21,7 @@ func Run() {
 	athleteController()
 	teamController()
 
+	// TODO: more useful actuator implementation
 	router.GET("/actuator", actuator)
 
 	err := router.Run(":" + port)

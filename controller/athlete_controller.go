@@ -14,6 +14,7 @@ func athleteController() {
 	router.DELETE("/athlete/:id", removeAthlete)
 	router.POST("/athlete", addAthlete)
 	router.PUT("/athlete", updateAthlete)
+	// TODO: HEAD requests receive 404
 }
 
 func getAthletes(c *gin.Context) {
