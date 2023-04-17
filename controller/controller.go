@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
+	"sr-athlete/athlete-service/service"
 )
 
 var router = gin.Default()
@@ -21,7 +22,6 @@ func Run() {
 	athleteController()
 	teamController()
 
-	// TODO: more useful actuator implementation
 	router.GET("/actuator", actuator)
 
 	err := router.Run(":" + port)
@@ -32,5 +32,11 @@ func Run() {
 }
 
 func actuator(c *gin.Context) {
-	c.String(http.StatusOK, "operating")
+
+	state := "OPERATIONAL"
+
+	if !service.PingDatabase() {
+		state = "DATABASE_DISCONNECTED"
+	}
+	c.String(http.StatusOK, state)
 }

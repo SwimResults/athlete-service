@@ -12,6 +12,9 @@ func teamController() {
 	router.GET("/team", getTeams)
 	router.GET("/team/:id", getTeam)
 	router.POST("/team", addTeam)
+
+	router.HEAD("/team", getTeams)
+	router.HEAD("/team/:id", getTeam)
 }
 
 func getTeams(c *gin.Context) {
@@ -33,7 +36,7 @@ func getTeam(c *gin.Context) {
 
 	team, err := service.GetTeamById(id)
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
 

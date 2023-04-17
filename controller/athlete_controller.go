@@ -14,7 +14,9 @@ func athleteController() {
 	router.DELETE("/athlete/:id", removeAthlete)
 	router.POST("/athlete", addAthlete)
 	router.PUT("/athlete", updateAthlete)
-	// TODO: HEAD requests receive 404
+
+	router.HEAD("/athlete", getAthletes)
+	router.HEAD("/athlete/:id", getAthlete)
 }
 
 func getAthletes(c *gin.Context) {
@@ -36,7 +38,7 @@ func getAthlete(c *gin.Context) {
 
 	athlete, err := service.GetAthleteById(id)
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
 
