@@ -33,7 +33,7 @@ func GetAthletes() ([]model.Athlete, error) {
 		cursor.Decode(&athlete)
 
 		var team model.Team
-		team, err = GetTeamById(athlete.Team.Identifier)
+		team, err = GetTeamById(athlete.TeamId)
 		if err == nil {
 			athlete.Team = team
 		}
@@ -64,7 +64,7 @@ func GetAthleteById(id primitive.ObjectID) (model.Athlete, error) {
 		cursor.Decode(&athlete)
 
 		var team model.Team
-		team, err = GetTeamById(athlete.Team.Identifier)
+		team, err = GetTeamById(athlete.TeamId)
 		if err == nil {
 			athlete.Team = team
 		}
@@ -91,6 +91,8 @@ func AddAthlete(athlete model.Athlete) (model.Athlete, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	athlete.TeamId = athlete.Team.Identifier
+
 	r, err := athleteCollection.InsertOne(ctx, athlete)
 	if err != nil {
 		return model.Athlete{}, err
@@ -102,6 +104,8 @@ func AddAthlete(athlete model.Athlete) (model.Athlete, error) {
 func UpdateAthlete(athlete model.Athlete) (model.Athlete, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	athlete.TeamId = athlete.Team.Identifier
 
 	_, err := athleteCollection.ReplaceOne(ctx, bson.D{{"_id", athlete.Identifier}}, athlete)
 	if err != nil {
