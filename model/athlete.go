@@ -11,4 +11,5 @@ type Athlete struct {
 	DsvId      int                `json:"dsv_id,omitempty" bson:"dsv_id,omitempty"`
 	TeamId     primitive.ObjectID `json:"-" bson:"team_id,omitempty"`
 	Team       Team               `json:"team,omitempty" bson:"-"`
+	FirstEvent string             `json:"first_event,omitempty" bson:"first_event,omitempty"`
 }

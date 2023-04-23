@@ -7,4 +7,5 @@ type Team struct {
 	Name       string             `json:"name,omitempty" bson:"name,omitempty"`
 	Alias      []string           `json:"alias,omitempty" bson:"alias,omitempty"`
 	Address    Address            `json:"address,omitempty" bson:"address,omitempty"`
+	FirstEvent string             `json:"first_event,omitempty" bson:"first_event,omitempty"`
 }
