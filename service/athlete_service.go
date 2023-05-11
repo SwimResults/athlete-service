@@ -16,13 +16,13 @@ func athleteService(database *mongo.Database) {
 	athleteCollection = database.Collection("athlete")
 }
 
-func GetAthletes() ([]model.Athlete, error) {
+func getAthletesByBsonDocument(d primitive.D) ([]model.Athlete, error) {
 	var athletes []model.Athlete
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cursor, err := athleteCollection.Find(ctx, bson.M{})
+	cursor, err := athleteCollection.Find(ctx, d)
 	if err != nil {
 		return []model.Athlete{}, err
 	}
@@ -48,28 +48,38 @@ func GetAthletes() ([]model.Athlete, error) {
 	return athletes, nil
 }
 
+func GetAthletes() ([]model.Athlete, error) {
+	return getAthletesByBsonDocument(bson.D{})
+}
+
+func GetAthletesByMeetingId(id string) ([]model.Athlete, error) {
+	var result []model.Athlete
+	athletes, err := getAthletesByBsonDocument(bson.D{})
+	if err != nil {
+		return []model.Athlete{}, err
+	}
+	for _, athlete := range athletes {
+		found := false
+		for _, meeting := range athlete.Participation {
+			if meeting == id {
+				found = true
+			}
+		}
+		if found {
+			result = append(result, athlete)
+		}
+	}
+	return result, nil
+}
+
 func GetAthleteById(id primitive.ObjectID) (model.Athlete, error) {
-	var athlete model.Athlete
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	cursor, err := athleteCollection.Find(ctx, bson.D{{"_id", id}})
+	athletes, err := getAthletesByBsonDocument(bson.D{{"_id", id}})
 	if err != nil {
 		return model.Athlete{}, err
 	}
-	defer cursor.Close(ctx)
 
-	if cursor.Next(ctx) {
-		cursor.Decode(&athlete)
-
-		var team model.Team
-		team, err = GetTeamById(athlete.TeamId)
-		if err == nil {
-			athlete.Team = team
-		}
-
-		return athlete, nil
+	if len(athletes) > 0 {
+		return athletes[0], nil
 	}
 
 	return model.Athlete{}, errors.New("no entry with given id found")
@@ -99,6 +109,33 @@ func AddAthlete(athlete model.Athlete) (model.Athlete, error) {
 	}
 
 	return GetAthleteById(r.InsertedID.(primitive.ObjectID))
+}
+
+func AddParticipation(id primitive.ObjectID, meet_id string) (model.Athlete, error) {
+	athlete, err := GetAthleteById(id)
+	if err != nil {
+		return model.Athlete{}, err
+	}
+
+	found := false
+	for _, meeting := range athlete.Participation {
+		if meeting == meet_id {
+			found = true
+		}
+	}
+	if !found {
+		athlete.Participation = append(athlete.Participation, meet_id)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err = athleteCollection.ReplaceOne(ctx, bson.D{{"_id", athlete.Identifier}}, athlete)
+	if err != nil {
+		return model.Athlete{}, err
+	}
+
+	return GetAthleteById(athlete.Identifier)
 }
 
 func UpdateAthlete(athlete model.Athlete) (model.Athlete, error) {

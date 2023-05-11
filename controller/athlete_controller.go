@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"sr-athlete/athlete-service/dto"
 	"sr-athlete/athlete-service/model"
 	"sr-athlete/athlete-service/service"
 )
@@ -11,8 +12,10 @@ import (
 func athleteController() {
 	router.GET("/athlete", getAthletes)
 	router.GET("/athlete/:id", getAthlete)
+	router.GET("/athlete/meet/:meet_id", getAthleteByMeeting)
 	router.DELETE("/athlete/:id", removeAthlete)
 	router.POST("/athlete", addAthlete)
+	router.POST("/athlete/participation", addParticipation)
 	router.PUT("/athlete", updateAthlete)
 
 	router.HEAD("/athlete", getAthletes)
@@ -21,6 +24,22 @@ func athleteController() {
 
 func getAthletes(c *gin.Context) {
 	athletes, err := service.GetAthletes()
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, athletes)
+}
+
+func getAthleteByMeeting(c *gin.Context) {
+	id := c.Param("meet_id")
+	if id == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given meet_id is empty"})
+		return
+	}
+
+	athletes, err := service.GetAthletesByMeetingId(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -75,6 +94,34 @@ func addAthlete(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, r)
+}
+
+func addParticipation(c *gin.Context) {
+
+	var data dto.AddParticipationRequestDto
+	if err := c.BindJSON(&data); err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	if data.MeetingId == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given meeting is empty"})
+		return
+	}
+
+	if data.AthleteId.IsZero() {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given athlete is empty"})
+		return
+	}
+
+	r, err := service.AddParticipation(data.AthleteId, data.MeetingId)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, r)
+
 }
 
 func updateAthlete(c *gin.Context) {
