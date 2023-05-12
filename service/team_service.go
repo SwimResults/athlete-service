@@ -61,6 +61,27 @@ func GetTeamById(id primitive.ObjectID) (model.Team, error) {
 	return model.Team{}, errors.New("no entry with given id found")
 }
 
+func GetTeamsByMeeting(id string) ([]model.Team, error) {
+	var result = map[primitive.ObjectID]model.Team{}
+
+	athletes, err := GetAthletesByMeetingId(id)
+	if err != nil {
+		return []model.Team{}, err
+	}
+
+	for _, athlete := range athletes {
+		if _, ok := result[athlete.Team.Identifier]; !ok {
+			result[athlete.Team.Identifier] = athlete.Team
+		}
+	}
+
+	var teams []model.Team
+	for _, team := range result {
+		teams = append(teams, team)
+	}
+	return teams, nil
+}
+
 func AddTeam(team model.Team) (model.Team, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
