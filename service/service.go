@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"os"
 	"time"
@@ -29,4 +30,17 @@ func PingDatabase() bool {
 	}
 
 	return true
+}
+
+type Paging struct {
+	Limit  int
+	Offset int
+	Query  string
+}
+
+func (p *Paging) getPaginatedOpts() options.FindOptions {
+	l := int64(p.Limit)
+	skip := int64(p.Offset)
+	fOpt := options.FindOptions{Limit: &l, Skip: &skip}
+	return fOpt
 }

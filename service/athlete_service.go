@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"sr-athlete/athlete-service/model"
 	"time"
 )
@@ -16,13 +17,17 @@ func athleteService(database *mongo.Database) {
 	athleteCollection = database.Collection("athlete")
 }
 
-func getAthletesByBsonDocument(d primitive.D) ([]model.Athlete, error) {
+func getAthletesByBsonDocument(d interface{}) ([]model.Athlete, error) {
+	return getAthletesByBsonDocumentWithOptions(d, options.FindOptions{})
+}
+
+func getAthletesByBsonDocumentWithOptions(d interface{}, fOps options.FindOptions) ([]model.Athlete, error) {
 	var athletes []model.Athlete
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cursor, err := athleteCollection.Find(ctx, d)
+	cursor, err := athleteCollection.Find(ctx, d, &fOps)
 	if err != nil {
 		return []model.Athlete{}, err
 	}
@@ -48,28 +53,32 @@ func getAthletesByBsonDocument(d primitive.D) ([]model.Athlete, error) {
 	return athletes, nil
 }
 
-func GetAthletes() ([]model.Athlete, error) {
-	return getAthletesByBsonDocument(bson.D{})
+func GetAthletes(paging Paging) ([]model.Athlete, error) {
+	return getAthletesByBsonDocumentWithOptions(
+		bson.M{
+			"$or": []interface{}{
+				bson.M{"name": bson.M{"$regex": paging.Query, "$options": "i"}},
+				bson.M{"firstname": bson.M{"$regex": paging.Query, "$options": "i"}},
+				bson.M{"lastname": bson.M{"$regex": paging.Query, "$options": "i"}},
+				bson.M{"dsv_id": bson.M{"$regex": paging.Query, "$options": "i"}},
+			},
+		}, paging.getPaginatedOpts())
 }
 
-func GetAthletesByMeetingId(id string) ([]model.Athlete, error) {
-	var result []model.Athlete
-	athletes, err := getAthletesByBsonDocument(bson.D{})
-	if err != nil {
-		return []model.Athlete{}, err
-	}
-	for _, athlete := range athletes {
-		found := false
-		for _, meeting := range athlete.Participation {
-			if meeting == id {
-				found = true
-			}
-		}
-		if found {
-			result = append(result, athlete)
-		}
-	}
-	return result, nil
+func GetAthletesByMeetingId(id string, paging Paging) ([]model.Athlete, error) {
+	return getAthletesByBsonDocumentWithOptions(bson.M{
+		"$and": []interface{}{
+			bson.M{"participation": id},
+			bson.M{
+				"$or": []interface{}{
+					bson.M{"name": bson.M{"$regex": paging.Query, "$options": "i"}},
+					bson.M{"firstname": bson.M{"$regex": paging.Query, "$options": "i"}},
+					bson.M{"lastname": bson.M{"$regex": paging.Query, "$options": "i"}},
+					bson.M{"dsv_id": bson.M{"$regex": paging.Query, "$options": "i"}},
+				},
+			},
+		},
+	}, paging.getPaginatedOpts())
 }
 
 func GetAthleteById(id primitive.ObjectID) (model.Athlete, error) {

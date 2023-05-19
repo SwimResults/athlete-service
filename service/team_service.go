@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"sr-athlete/athlete-service/model"
 	"time"
 )
@@ -16,13 +17,17 @@ func teamService(database *mongo.Database) {
 	teamCollection = database.Collection("team")
 }
 
-func GetTeams() ([]model.Team, error) {
+func getTeamsByBsonDocument(d primitive.D) ([]model.Team, error) {
+	return getTeamsByBsonDocumentWithOptions(d, options.FindOptions{})
+}
+
+func getTeamsByBsonDocumentWithOptions(d primitive.D, fOps options.FindOptions) ([]model.Team, error) {
 	var teams []model.Team
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cursor, err := teamCollection.Find(ctx, bson.M{})
+	cursor, err := teamCollection.Find(ctx, d, &fOps)
 	if err != nil {
 		return []model.Team{}, err
 	}
@@ -31,6 +36,7 @@ func GetTeams() ([]model.Team, error) {
 	for cursor.Next(ctx) {
 		var team model.Team
 		cursor.Decode(&team)
+
 		teams = append(teams, team)
 	}
 
@@ -39,6 +45,10 @@ func GetTeams() ([]model.Team, error) {
 	}
 
 	return teams, nil
+}
+
+func GetTeams(paging Paging) ([]model.Team, error) {
+	return getTeamsByBsonDocumentWithOptions(bson.D{}, paging.getPaginatedOpts())
 }
 
 func GetTeamById(id primitive.ObjectID) (model.Team, error) {
@@ -61,10 +71,10 @@ func GetTeamById(id primitive.ObjectID) (model.Team, error) {
 	return model.Team{}, errors.New("no entry with given id found")
 }
 
-func GetTeamsByMeeting(id string) ([]model.Team, error) {
+func GetTeamsByMeeting(id string, paging Paging) ([]model.Team, error) {
 	var result = map[primitive.ObjectID]model.Team{}
 
-	athletes, err := GetAthletesByMeetingId(id)
+	athletes, err := GetAthletesByMeetingId(id, Paging{})
 	if err != nil {
 		return []model.Team{}, err
 	}

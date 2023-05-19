@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"sr-athlete/athlete-service/service"
+	"strconv"
 )
 
 var router = gin.Default()
@@ -29,6 +30,16 @@ func Run() {
 		fmt.Println("Unable to start application on port " + port)
 		return
 	}
+}
+
+func extractPagingParams(c *gin.Context) service.Paging {
+	limit := 1000
+	offset := 0
+	query := ""
+	limit, _ = strconv.Atoi(c.Query("limit"))
+	offset, _ = strconv.Atoi(c.Query("offset"))
+	query = c.Query("query")
+	return service.Paging{Limit: limit, Offset: offset, Query: query}
 }
 
 func actuator(c *gin.Context) {

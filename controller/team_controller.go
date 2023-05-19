@@ -19,7 +19,7 @@ func teamController() {
 }
 
 func getTeams(c *gin.Context) {
-	teams, err := service.GetTeams()
+	teams, err := service.GetTeams(extractPagingParams(c))
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -51,7 +51,7 @@ func getTeamsByMeeting(c *gin.Context) {
 		return
 	}
 
-	teams, err := service.GetTeamsByMeeting(id)
+	teams, err := service.GetTeamsByMeeting(id, extractPagingParams(c))
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
