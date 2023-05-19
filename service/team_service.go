@@ -17,11 +17,11 @@ func teamService(database *mongo.Database) {
 	teamCollection = database.Collection("team")
 }
 
-func getTeamsByBsonDocument(d primitive.D) ([]model.Team, error) {
+func getTeamsByBsonDocument(d interface{}) ([]model.Team, error) {
 	return getTeamsByBsonDocumentWithOptions(d, options.FindOptions{})
 }
 
-func getTeamsByBsonDocumentWithOptions(d primitive.D, fOps options.FindOptions) ([]model.Team, error) {
+func getTeamsByBsonDocumentWithOptions(d interface{}, fOps options.FindOptions) ([]model.Team, error) {
 	var teams []model.Team
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -48,7 +48,13 @@ func getTeamsByBsonDocumentWithOptions(d primitive.D, fOps options.FindOptions) 
 }
 
 func GetTeams(paging Paging) ([]model.Team, error) {
-	return getTeamsByBsonDocumentWithOptions(bson.D{}, paging.getPaginatedOpts())
+	return getTeamsByBsonDocumentWithOptions(
+		bson.M{
+			"$or": []interface{}{
+				bson.M{"name": bson.M{"$regex": paging.Query, "$options": "i"}},
+				bson.M{"alias": bson.M{"$regex": paging.Query, "$options": "i"}},
+			},
+		}, paging.getPaginatedOpts())
 }
 
 func GetTeamById(id primitive.ObjectID) (model.Team, error) {
