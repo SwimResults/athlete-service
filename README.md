@@ -3,30 +3,16 @@
 - sportlers with YoB and Club
 - Teams
 
-## Models
-
-### Athlete
-
-- id
-- name
-- year
-- team (id)
-
-### Team
-
-- id
-- name
-- aliases
-
 
 ## API Endpoints
 
     [GIN-debug] GET    /athlete                  --> sr-athlete/athlete-service/controller.getAthletes (3 handlers)
     [GIN-debug] GET    /athlete/:id              --> sr-athlete/athlete-service/controller.getAthlete (3 handlers)
-    [GIN-debug] GET    /athlete/meet/:meet_id    --> sr-athlete/athlete-service/controller.getAthleteByMeeting (3 handlers)
-    [GIN-debug] DELETE /athlete/:id              --> sr-athlete/athlete-service/controller.removeAthlete (3 handlers)
+    [GIN-debug] GET    /athlete/meet/:meet_id    --> sr-athlete/athlete-service/controller.getAthletesByMeeting (3 handlers)
+    [GIN-debug] GET    /athlete/team/:team_id    --> sr-athlete/athlete-service/controller.getAthletesByTeam (3 handlers)   
+    [GIN-debug] DELETE /athlete/:id              --> sr-athlete/athlete-service/controller.removeAthlete (3 handlers)       
     [GIN-debug] POST   /athlete                  --> sr-athlete/athlete-service/controller.addAthlete (3 handlers)
-    [GIN-debug] POST   /athlete/participation    --> sr-athlete/athlete-service/controller.addParticipation (3 handlers)
+    [GIN-debug] POST   /athlete/participation    --> sr-athlete/athlete-service/controller.addParticipation (3 handlers)    
     [GIN-debug] PUT    /athlete                  --> sr-athlete/athlete-service/controller.updateAthlete (3 handlers)
     [GIN-debug] HEAD   /athlete                  --> sr-athlete/athlete-service/controller.getAthletes (3 handlers)
     [GIN-debug] HEAD   /athlete/:id              --> sr-athlete/athlete-service/controller.getAthlete (3 handlers)
