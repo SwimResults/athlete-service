@@ -13,6 +13,7 @@ func athleteController() {
 	router.GET("/athlete", getAthletes)
 	router.GET("/athlete/:id", getAthlete)
 	router.GET("/athlete/meet/:meet_id", getAthletesByMeeting)
+	router.GET("/athlete/team/:team_id", getAthletesByTeam)
 	router.DELETE("/athlete/:id", removeAthlete)
 	router.POST("/athlete", addAthlete)
 	router.POST("/athlete/participation", addParticipation)
@@ -40,6 +41,22 @@ func getAthletesByMeeting(c *gin.Context) {
 	}
 
 	athletes, err := service.GetAthletesByMeetingId(id, extractPagingParams(c))
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, athletes)
+}
+
+func getAthletesByTeam(c *gin.Context) {
+	id, convErr := primitive.ObjectIDFromHex(c.Param("team_id"))
+	if convErr != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given team_id was not of type ObjectID"})
+		return
+	}
+
+	athletes, err := service.GetAthletesByTeamId(id, extractPagingParams(c))
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
