@@ -110,7 +110,7 @@ func addAthlete(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, r)
+	c.IndentedJSON(http.StatusCreated, r)
 }
 
 func addParticipation(c *gin.Context) {

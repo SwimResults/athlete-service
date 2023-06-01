@@ -73,5 +73,5 @@ func addTeam(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, r)
+	c.IndentedJSON(http.StatusCreated, r)
 }
