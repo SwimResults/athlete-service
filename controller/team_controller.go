@@ -2,10 +2,10 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/swimresults/athlete-service/model"
+	"github.com/swimresults/athlete-service/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
-	"sr-athlete/athlete-service/model"
-	"sr-athlete/athlete-service/service"
 )
 
 func teamController() {

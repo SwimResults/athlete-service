@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/swimresults/athlete-service/controller"
+	"github.com/swimresults/athlete-service/service"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"os"
-	"sr-athlete/athlete-service/controller"
-	"sr-athlete/athlete-service/service"
 	"time"
 )
 

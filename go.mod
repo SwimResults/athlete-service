@@ -1,4 +1,4 @@
-module sr-athlete/athlete-service
+module github.com/swimresults/athlete-service
 
 go 1.18
 

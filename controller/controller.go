@@ -3,9 +3,9 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/swimresults/athlete-service/service"
 	"net/http"
 	"os"
-	"sr-athlete/athlete-service/service"
 	"strconv"
 )
 
