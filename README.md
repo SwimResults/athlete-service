@@ -23,3 +23,8 @@
     [GIN-debug] HEAD   /team                     --> sr-athlete/athlete-service/controller.getTeams (3 handlers)
     [GIN-debug] HEAD   /team/:id                 --> sr-athlete/athlete-service/controller.getTeam (3 handlers)
     [GIN-debug] GET    /actuator                 --> sr-athlete/athlete-service/controller.actuator (3 handlers)
+
+
+---------
+
+© Copyright 2022-2023 - SwimResults & Konrad Weiß
