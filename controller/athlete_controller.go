@@ -113,6 +113,10 @@ func addAthlete(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, r)
 }
 
+func importAthlete(c *gin.Context) {
+
+}
+
 func addParticipation(c *gin.Context) {
 
 	var data dto.AddParticipationRequestDto
