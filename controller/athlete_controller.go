@@ -114,7 +114,11 @@ func addAthlete(c *gin.Context) {
 }
 
 func importAthlete(c *gin.Context) {
-
+	var data dto.ImportAthleteRequestDto
+	if err := c.BindJSON(&data); err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
 }
 
 func addParticipation(c *gin.Context) {
