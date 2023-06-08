@@ -17,7 +17,7 @@ func NewTeamClient(url string) *TeamClient {
 	return &TeamClient{apiUrl: url}
 }
 
-func (c *TeamClient) importTeam(team model.Team, meeting string) (*model.Team, error) {
+func (c *TeamClient) ImportTeam(team model.Team, meeting string) (*model.Team, error) {
 	request := dto.ImportTeamRequestDto{
 		Meeting: meeting,
 		Team:    team,

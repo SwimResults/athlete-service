@@ -17,7 +17,7 @@ func NewAthleteClient(url string) *AthleteClient {
 	return &AthleteClient{apiUrl: url}
 }
 
-func (c *AthleteClient) importAthlete(athlete model.Athlete, meeting string) (*model.Athlete, error) {
+func (c *AthleteClient) ImportAthlete(athlete model.Athlete, meeting string) (*model.Athlete, error) {
 	request := dto.ImportAthleteRequestDto{
 		Meeting: meeting,
 		Athlete: athlete,

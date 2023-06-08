@@ -8,7 +8,7 @@ package client
 //		StateId: 4,
 //	}
 //	c := NewTeamClient("http://localhost:8086/")
-//	newTeam, err := c.importTeam(team, "IESC12")
+//	newTeam, err := c.IImportTeam(team, "IESC12")
 //	if err != nil {
 //		fmt.Printf(err.Error())
 //	}

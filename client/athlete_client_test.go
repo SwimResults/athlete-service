@@ -8,7 +8,7 @@ package client
 //		DsvId: 123444,
 //	}
 //	c := NewAthleteClient("http://localhost:8086/")
-//	newAthlete, err := c.importAthlete(athlete, "IESC13")
+//	newAthlete, err := c.ImportAthlete(athlete, "IESC13")
 //	if err != nil {
 //		fmt.Printf(err.Error())
 //	}
