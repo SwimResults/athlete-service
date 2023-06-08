@@ -163,25 +163,79 @@ func AddTeamParticipation(id primitive.ObjectID, meetId string) (model.Team, err
 
 func ImportTeam(team model.Team, meetId string) (model.Team, bool, error) {
 	existingTeam, err := getTeamByName(team.Name)
+
 	if err != nil {
 		if err.Error() == "no team with given name found" {
+
 			fmt.Printf("import of team '%s', not existing so far\n", team.Name)
+			team.FirstMeeting = meetId
 			newTeam, err2 := AddTeam(team)
 			if err2 != nil {
 				return model.Team{}, false, err2
 			}
+
 			newTeam, err2 = AddTeamParticipation(newTeam.Identifier, meetId)
 			if err2 != nil {
 				return model.Team{}, false, err2
 			}
+
 			return newTeam, true, nil
 		}
 		return model.Team{}, false, err
 	}
+
+	changed := false
+	if existingTeam.DsvId == 0 && team.DsvId != 0 {
+		existingTeam.DsvId = team.DsvId
+		changed = true
+	}
+	if existingTeam.StateId == 0 && team.StateId != 0 {
+		existingTeam.StateId = team.StateId
+		changed = true
+	}
+	if existingTeam.Country == "" && team.Country != "" {
+		existingTeam.Country = team.Country
+		changed = true
+	}
+
 	fmt.Printf("import of team '%s', already present\n", team.Name)
+
+	if changed {
+		fmt.Printf("updating some values...\n")
+		existingTeam, err = UpdateTeam(existingTeam)
+		if err != nil {
+			return model.Team{}, false, err
+		}
+	}
+
 	existingTeam, err = AddTeamParticipation(existingTeam.Identifier, meetId)
 	if err != nil {
 		return model.Team{}, false, err
 	}
+
 	return existingTeam, false, nil
+}
+
+func UpdateTeam(team model.Team) (model.Team, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	alias := Aliasify(team.Name)
+
+	found := false
+	for _, a := range team.Alias {
+		if a == alias {
+			found = true
+		}
+	}
+	if !found {
+		team.Alias = append(team.Alias, alias)
+	}
+
+	_, err := teamCollection.ReplaceOne(ctx, bson.D{{"_id", team.Identifier}}, team)
+	if err != nil {
+		return model.Team{}, err
+	}
+
+	return GetTeamById(team.Identifier)
 }

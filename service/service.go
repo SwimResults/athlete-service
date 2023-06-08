@@ -50,7 +50,7 @@ func Aliasify(text string) string {
 	text = strings.ToLower(text)
 	text = strings.ReplaceAll(text, " ", "")
 
-	// TODO: handle special characters
+	// TODO: source out in core
 
 	return text
 }
