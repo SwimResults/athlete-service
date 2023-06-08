@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -43,4 +44,13 @@ func (p *Paging) getPaginatedOpts() options.FindOptions {
 	skip := int64(p.Offset)
 	fOpt := options.FindOptions{Limit: &l, Skip: &skip}
 	return fOpt
+}
+
+func Aliasify(text string) string {
+	text = strings.ToLower(text)
+	text = strings.ReplaceAll(text, " ", "")
+
+	// TODO: handle special characters
+
+	return text
 }

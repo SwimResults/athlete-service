@@ -54,6 +54,7 @@ func GetTeams(paging Paging) ([]model.Team, error) {
 			"$or": []interface{}{
 				bson.M{"name": bson.M{"$regex": paging.Query, "$options": "i"}},
 				bson.M{"alias": bson.M{"$regex": paging.Query, "$options": "i"}},
+				bson.M{"alias": bson.M{"$regex": Aliasify(paging.Query), "$options": "i"}},
 			},
 		}, paging.getPaginatedOpts())
 }
@@ -105,6 +106,7 @@ func getTeamByName(name string) (model.Team, error) {
 			"$or": []interface{}{
 				bson.M{"name": bson.M{"$regex": name, "$options": "i"}},
 				bson.M{"alias": bson.M{"$regex": name, "$options": "i"}},
+				bson.M{"alias": bson.M{"$regex": Aliasify(name), "$options": "i"}},
 			},
 		})
 	if err != nil {
@@ -120,6 +122,8 @@ func getTeamByName(name string) (model.Team, error) {
 func AddTeam(team model.Team) (model.Team, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	team.Alias = append(team.Alias, Aliasify(team.Name))
 
 	r, err := teamCollection.InsertOne(ctx, team)
 	if err != nil {
