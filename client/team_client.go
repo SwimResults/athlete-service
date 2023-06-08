@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/swimresults/athlete-service/dto"
 	"github.com/swimresults/athlete-service/model"
+	"github.com/swimresults/service-core/client"
 	"net/http"
 )
 
@@ -22,7 +23,7 @@ func (c *TeamClient) importTeam(team model.Team, meeting string) (*model.Team, e
 		Team:    team,
 	}
 
-	res, err := Post(c.apiUrl, "team/import", request)
+	res, err := client.Post(c.apiUrl, "team/import", request)
 	if err != nil {
 		return nil, err
 	}

@@ -6,7 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -44,26 +43,4 @@ func (p *Paging) getPaginatedOpts() options.FindOptions {
 	skip := int64(p.Offset)
 	fOpt := options.FindOptions{Limit: &l, Skip: &skip}
 	return fOpt
-}
-
-func Aliasify(text string) string {
-	text = strings.ToLower(text)
-	text = strings.ReplaceAll(text, " ", "")
-
-	// TODO: source out in core
-
-	return text
-}
-
-func AppendWithoutDuplicates(a []string, e string) []string {
-	found := false
-	for _, b := range a {
-		if b == e {
-			found = true
-		}
-	}
-	if !found {
-		return append(a, e)
-	}
-	return a
 }

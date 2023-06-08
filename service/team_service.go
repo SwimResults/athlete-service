@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/swimresults/athlete-service/model"
+	"github.com/swimresults/service-core/misc"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -54,7 +55,7 @@ func GetTeams(paging Paging) ([]model.Team, error) {
 			"$or": []interface{}{
 				bson.M{"name": bson.M{"$regex": paging.Query, "$options": "i"}},
 				bson.M{"alias": bson.M{"$regex": paging.Query, "$options": "i"}},
-				bson.M{"alias": bson.M{"$regex": Aliasify(paging.Query), "$options": "i"}},
+				bson.M{"alias": bson.M{"$regex": misc.Aliasify(paging.Query), "$options": "i"}},
 			},
 		}, paging.getPaginatedOpts())
 }
@@ -106,7 +107,7 @@ func getTeamByName(name string) (model.Team, error) {
 			"$or": []interface{}{
 				bson.M{"name": bson.M{"$regex": name, "$options": "i"}},
 				bson.M{"alias": bson.M{"$regex": name, "$options": "i"}},
-				bson.M{"alias": bson.M{"$regex": Aliasify(name), "$options": "i"}},
+				bson.M{"alias": bson.M{"$regex": misc.Aliasify(name), "$options": "i"}},
 			},
 		})
 	if err != nil {
@@ -123,7 +124,7 @@ func AddTeam(team model.Team) (model.Team, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	team.Alias = append(team.Alias, Aliasify(team.Name))
+	team.Alias = append(team.Alias, misc.Aliasify(team.Name))
 
 	r, err := teamCollection.InsertOne(ctx, team)
 	if err != nil {
@@ -140,7 +141,7 @@ func AddTeamParticipation(id primitive.ObjectID, meetId string) (model.Team, err
 		return model.Team{}, err
 	}
 
-	team.Participation = AppendWithoutDuplicates(team.Participation, meetId)
+	team.Participation = misc.AppendWithoutDuplicates(team.Participation, meetId)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -212,7 +213,7 @@ func UpdateTeam(team model.Team) (model.Team, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	team.Alias = AppendWithoutDuplicates(team.Alias, Aliasify(team.Name))
+	team.Alias = misc.AppendWithoutDuplicates(team.Alias, misc.Aliasify(team.Name))
 
 	_, err := teamCollection.ReplaceOne(ctx, bson.D{{"_id", team.Identifier}}, team)
 	if err != nil {
