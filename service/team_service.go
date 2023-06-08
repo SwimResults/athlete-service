@@ -140,15 +140,7 @@ func AddTeamParticipation(id primitive.ObjectID, meetId string) (model.Team, err
 		return model.Team{}, err
 	}
 
-	found := false
-	for _, meeting := range team.Participation {
-		if meeting == meetId {
-			found = true
-		}
-	}
-	if !found {
-		team.Participation = append(team.Participation, meetId)
-	}
+	team.Participation = AppendWithoutDuplicates(team.Participation, meetId)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -220,17 +212,7 @@ func UpdateTeam(team model.Team) (model.Team, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	alias := Aliasify(team.Name)
-
-	found := false
-	for _, a := range team.Alias {
-		if a == alias {
-			found = true
-		}
-	}
-	if !found {
-		team.Alias = append(team.Alias, alias)
-	}
+	team.Alias = AppendWithoutDuplicates(team.Alias, Aliasify(team.Name))
 
 	_, err := teamCollection.ReplaceOne(ctx, bson.D{{"_id", team.Identifier}}, team)
 	if err != nil {
