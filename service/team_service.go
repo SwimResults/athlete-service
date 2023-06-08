@@ -129,7 +129,35 @@ func AddTeam(team model.Team) (model.Team, error) {
 	return GetTeamById(r.InsertedID.(primitive.ObjectID))
 }
 
-func ImportTeam(team model.Team) (model.Team, bool, error) {
+func AddTeamParticipation(id primitive.ObjectID, meetId string) (model.Team, error) {
+	fmt.Printf("add participation to team: %s (%s)\n", id.String(), meetId)
+	team, err := GetTeamById(id)
+	if err != nil {
+		return model.Team{}, err
+	}
+
+	found := false
+	for _, meeting := range team.Participation {
+		if meeting == meetId {
+			found = true
+		}
+	}
+	if !found {
+		team.Participation = append(team.Participation, meetId)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err = teamCollection.ReplaceOne(ctx, bson.D{{"_id", team.Identifier}}, team)
+	if err != nil {
+		return model.Team{}, err
+	}
+
+	return GetTeamById(team.Identifier)
+}
+
+func ImportTeam(team model.Team, meetId string) (model.Team, bool, error) {
 	existingTeam, err := getTeamByName(team.Name)
 	if err != nil {
 		if err.Error() == "no team with given name found" {
@@ -138,10 +166,18 @@ func ImportTeam(team model.Team) (model.Team, bool, error) {
 			if err2 != nil {
 				return model.Team{}, false, err2
 			}
+			newTeam, err2 = AddTeamParticipation(newTeam.Identifier, meetId)
+			if err2 != nil {
+				return model.Team{}, false, err2
+			}
 			return newTeam, true, nil
 		}
 		return model.Team{}, false, err
 	}
 	fmt.Printf("import of team '%s', already present\n", team.Name)
+	existingTeam, err = AddTeamParticipation(existingTeam.Identifier, meetId)
+	if err != nil {
+		return model.Team{}, false, err
+	}
 	return existingTeam, false, nil
 }

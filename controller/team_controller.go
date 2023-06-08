@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/swimresults/athlete-service/dto"
 	"github.com/swimresults/athlete-service/model"
 	"github.com/swimresults/athlete-service/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -79,12 +80,13 @@ func addTeam(c *gin.Context) {
 
 func importTeam(c *gin.Context) {
 	var team model.Team
-	if err := c.BindJSON(&team); err != nil {
+	var request dto.ImportTeamRequestDto
+	if err := c.BindJSON(&request); err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	team, r, err := service.ImportTeam(team)
+	team, r, err := service.ImportTeam(request.Team, request.Meeting)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

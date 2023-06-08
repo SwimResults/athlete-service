@@ -136,7 +136,7 @@ func AddAthlete(athlete model.Athlete) (model.Athlete, error) {
 	return GetAthleteById(r.InsertedID.(primitive.ObjectID))
 }
 
-func AddParticipation(id primitive.ObjectID, meet_id string) (model.Athlete, error) {
+func AddParticipation(id primitive.ObjectID, meetId string) (model.Athlete, error) {
 	athlete, err := GetAthleteById(id)
 	if err != nil {
 		return model.Athlete{}, err
@@ -144,12 +144,12 @@ func AddParticipation(id primitive.ObjectID, meet_id string) (model.Athlete, err
 
 	found := false
 	for _, meeting := range athlete.Participation {
-		if meeting == meet_id {
+		if meeting == meetId {
 			found = true
 		}
 	}
 	if !found {
-		athlete.Participation = append(athlete.Participation, meet_id)
+		athlete.Participation = append(athlete.Participation, meetId)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
