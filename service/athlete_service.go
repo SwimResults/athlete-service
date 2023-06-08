@@ -29,6 +29,8 @@ func getAthletesByBsonDocumentWithOptions(d interface{}, fOps options.FindOption
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	fOps.SetSort(bson.D{{"name", 1}})
+
 	cursor, err := athleteCollection.Find(ctx, d, &fOps)
 	if err != nil {
 		return []model.Athlete{}, err

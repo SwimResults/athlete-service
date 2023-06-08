@@ -29,6 +29,8 @@ func getTeamsByBsonDocumentWithOptions(d interface{}, fOps options.FindOptions) 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	fOps.SetSort(bson.D{{"name", 1}})
+
 	cursor, err := teamCollection.Find(ctx, d, &fOps)
 	if err != nil {
 		return []model.Team{}, err
