@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/swimresults/athlete-service/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -98,6 +99,24 @@ func GetTeamsByMeeting(id string, paging Paging) ([]model.Team, error) {
 	return teams, nil
 }
 
+func getTeamByName(name string) (model.Team, error) {
+	teams, err := getTeamsByBsonDocument(
+		bson.M{
+			"$or": []interface{}{
+				bson.M{"name": bson.M{"$regex": name, "$options": "i"}},
+				bson.M{"alias": bson.M{"$regex": name, "$options": "i"}},
+			},
+		})
+	if err != nil {
+		return model.Team{}, err
+	}
+	if len(teams) < 1 {
+		fmt.Printf("no team with given name '%s' found\n", name)
+		return model.Team{}, errors.New("no team with given name found")
+	}
+	return teams[0], nil
+}
+
 func AddTeam(team model.Team) (model.Team, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -108,4 +127,21 @@ func AddTeam(team model.Team) (model.Team, error) {
 	}
 
 	return GetTeamById(r.InsertedID.(primitive.ObjectID))
+}
+
+func ImportTeam(team model.Team) (model.Team, bool, error) {
+	existingTeam, err := getTeamByName(team.Name)
+	if err != nil {
+		if err.Error() == "no team with given name found" {
+			fmt.Printf("import of team '%s', not existing so far\n", team.Name)
+			newTeam, err2 := AddTeam(team)
+			if err2 != nil {
+				return model.Team{}, false, err2
+			}
+			return newTeam, true, nil
+		}
+		return model.Team{}, false, err
+	}
+	fmt.Printf("import of team '%s', already present\n", team.Name)
+	return existingTeam, false, nil
 }

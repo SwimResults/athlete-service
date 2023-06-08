@@ -13,6 +13,7 @@ func teamController() {
 	router.GET("/team/:id", getTeam)
 	router.GET("/team/meet/:meet_id", getTeamsByMeeting)
 	router.POST("/team", addTeam)
+	router.POST("/team/import", importTeam)
 
 	router.HEAD("/team", getTeams)
 	router.HEAD("/team/:id", getTeam)
@@ -74,4 +75,24 @@ func addTeam(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, r)
+}
+
+func importTeam(c *gin.Context) {
+	var team model.Team
+	if err := c.BindJSON(&team); err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	team, r, err := service.ImportTeam(team)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	if r {
+		c.IndentedJSON(http.StatusCreated, team)
+	} else {
+		c.IndentedJSON(http.StatusOK, team)
+	}
 }
