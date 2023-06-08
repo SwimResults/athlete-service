@@ -61,24 +61,18 @@ func GetTeams(paging Paging) ([]model.Team, error) {
 }
 
 func GetTeamsByMeeting(id string, paging Paging) ([]model.Team, error) {
-	var result = map[primitive.ObjectID]model.Team{}
-
-	athletes, err := GetAthletesByMeetingId(id, Paging{})
-	if err != nil {
-		return []model.Team{}, err
-	}
-
-	for _, athlete := range athletes {
-		if _, ok := result[athlete.Team.Identifier]; !ok {
-			result[athlete.Team.Identifier] = athlete.Team
-		}
-	}
-
-	var teams []model.Team
-	for _, team := range result {
-		teams = append(teams, team)
-	}
-	return teams, nil
+	return getTeamsByBsonDocumentWithOptions(bson.M{
+		"$and": []interface{}{
+			bson.M{"participation": id},
+			bson.M{
+				"$or": []interface{}{
+					bson.M{"name": bson.M{"$regex": paging.Query, "$options": "i"}},
+					bson.M{"alias": bson.M{"$regex": paging.Query, "$options": "i"}},
+					bson.M{"alias": bson.M{"$regex": misc.Aliasify(paging.Query), "$options": "i"}},
+				},
+			},
+		},
+	}, paging.getPaginatedOpts())
 }
 
 func GetTeamById(id primitive.ObjectID) (model.Team, error) {
