@@ -60,26 +60,6 @@ func GetTeams(paging Paging) ([]model.Team, error) {
 		}, paging.getPaginatedOpts())
 }
 
-func GetTeamById(id primitive.ObjectID) (model.Team, error) {
-	var team model.Team
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	cursor, err := teamCollection.Find(ctx, bson.D{{"_id", id}})
-	if err != nil {
-		return model.Team{}, err
-	}
-	defer cursor.Close(ctx)
-
-	if cursor.Next(ctx) {
-		cursor.Decode(&team)
-		return team, nil
-	}
-
-	return model.Team{}, errors.New("no entry with given id found")
-}
-
 func GetTeamsByMeeting(id string, paging Paging) ([]model.Team, error) {
 	var result = map[primitive.ObjectID]model.Team{}
 
@@ -99,6 +79,30 @@ func GetTeamsByMeeting(id string, paging Paging) ([]model.Team, error) {
 		teams = append(teams, team)
 	}
 	return teams, nil
+}
+
+func GetTeamById(id primitive.ObjectID) (model.Team, error) {
+	teams, err := getTeamsByBsonDocument(bson.D{{"_id", id}})
+	if err != nil {
+		return model.Team{}, err
+	}
+	if len(teams) < 1 {
+		fmt.Printf("no team with given id '%d' found\n", id)
+		return model.Team{}, errors.New("no entry with given id found")
+	}
+	return teams[0], nil
+}
+
+func GetTeamByDsvId(dsvId int) (model.Team, error) {
+	teams, err := getTeamsByBsonDocument(bson.D{{"dsv_id", dsvId}})
+	if err != nil {
+		return model.Team{}, err
+	}
+	if len(teams) < 1 {
+		fmt.Printf("no team with given dsv_id '%d' found\n", dsvId)
+		return model.Team{}, errors.New("no entry with given id found")
+	}
+	return teams[0], nil
 }
 
 func getTeamByName(name string) (model.Team, error) {
