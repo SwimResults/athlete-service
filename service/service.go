@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -43,4 +44,12 @@ func (p *Paging) getPaginatedOpts() options.FindOptions {
 	skip := int64(p.Offset)
 	fOpt := options.FindOptions{Limit: &l, Skip: &skip}
 	return fOpt
+}
+
+func extractNames(name string) (bool, string, string) {
+	if strings.Contains(name, ",") {
+		names := strings.Split(name, ",")
+		return true, strings.Trim(names[1], " "), strings.Trim(names[0], " ")
+	}
+	return false, "", ""
 }

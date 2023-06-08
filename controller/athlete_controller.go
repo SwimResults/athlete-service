@@ -16,6 +16,7 @@ func athleteController() {
 	router.GET("/athlete/team/:team_id", getAthletesByTeam)
 	router.DELETE("/athlete/:id", removeAthlete)
 	router.POST("/athlete", addAthlete)
+	router.POST("/athlete/import", importAthlete)
 	router.POST("/athlete/participation", addParticipation)
 	router.PUT("/athlete", updateAthlete)
 
@@ -113,14 +114,6 @@ func addAthlete(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, r)
 }
 
-func importAthlete(c *gin.Context) {
-	var data dto.ImportAthleteRequestDto
-	if err := c.BindJSON(&data); err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-}
-
 func addParticipation(c *gin.Context) {
 
 	var data dto.AddParticipationRequestDto
@@ -163,4 +156,25 @@ func updateAthlete(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, r)
+}
+
+func importAthlete(c *gin.Context) {
+	var athlete *model.Athlete
+	var request dto.ImportAthleteRequestDto
+	if err := c.BindJSON(&request); err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	athlete, r, err := service.ImportAthlete(request.Athlete, request.Meeting)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	if r {
+		c.IndentedJSON(http.StatusCreated, *athlete)
+	} else {
+		c.IndentedJSON(http.StatusOK, *athlete)
+	}
 }
