@@ -27,6 +27,7 @@ func main() {
 	})
 	log.SetLevel(log.TraceLevel)
 
+	rand.Seed(time.Now().UnixNano())
 	min := 1000000
 	max := 9999999
 	rnd := rand.Intn(max-min) + min
