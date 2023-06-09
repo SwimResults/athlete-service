@@ -17,7 +17,7 @@ func NewTeamClient(url string) *TeamClient {
 	return &TeamClient{apiUrl: url}
 }
 
-func (c *TeamClient) ImportTeam(team model.Team, meeting string) (*model.Team, error) {
+func (c *TeamClient) ImportTeam(team model.Team, meeting string) (*model.Team, bool, error) {
 	request := dto.ImportTeamRequestDto{
 		Meeting: meeting,
 		Team:    team,
@@ -25,18 +25,18 @@ func (c *TeamClient) ImportTeam(team model.Team, meeting string) (*model.Team, e
 
 	res, err := client.Post(c.apiUrl, "team/import", request)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	defer res.Body.Close()
 
 	newTeam := &model.Team{}
 	err = json.NewDecoder(res.Body).Decode(newTeam)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	if res.StatusCode != http.StatusCreated && res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("import request returned: %d", res.StatusCode)
+		return nil, false, fmt.Errorf("import request returned: %d", res.StatusCode)
 	}
-	return newTeam, nil
+	return newTeam, res.StatusCode == http.StatusCreated, nil
 }

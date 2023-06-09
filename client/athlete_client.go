@@ -17,7 +17,7 @@ func NewAthleteClient(url string) *AthleteClient {
 	return &AthleteClient{apiUrl: url}
 }
 
-func (c *AthleteClient) ImportAthlete(athlete model.Athlete, meeting string) (*model.Athlete, error) {
+func (c *AthleteClient) ImportAthlete(athlete model.Athlete, meeting string) (*model.Athlete, bool, error) {
 	request := dto.ImportAthleteRequestDto{
 		Meeting: meeting,
 		Athlete: athlete,
@@ -25,18 +25,18 @@ func (c *AthleteClient) ImportAthlete(athlete model.Athlete, meeting string) (*m
 
 	res, err := client.Post(c.apiUrl, "athlete/import", request)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	defer res.Body.Close()
 
 	newAthlete := &model.Athlete{}
 	err = json.NewDecoder(res.Body).Decode(newAthlete)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	if res.StatusCode != http.StatusCreated && res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("import request returned: %d", res.StatusCode)
+		return nil, false, fmt.Errorf("import request returned: %d", res.StatusCode)
 	}
-	return newAthlete, nil
+	return newAthlete, res.StatusCode == http.StatusCreated, nil
 }
