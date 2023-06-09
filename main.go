@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"math/rand"
 	"os"
 	"time"
 )
@@ -26,7 +27,12 @@ func main() {
 	})
 	log.SetLevel(log.TraceLevel)
 
-	file, err := os.OpenFile("logs/out.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	min := 1000000
+	max := 9999999
+	rnd := rand.Intn(max-min) + min
+	filename := fmt.Sprintf("logs/out-%d.log", rnd)
+
+	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err == nil {
 		log.SetOutput(file)
 	}
