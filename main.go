@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/swimresults/athlete-service/controller"
 	"github.com/swimresults/athlete-service/service"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -16,6 +17,23 @@ var client *mongo.Client
 
 func main() {
 	ctx := connectDB()
+
+	log.SetFormatter(&log.JSONFormatter{
+		FieldMap: log.FieldMap{
+			log.FieldKeyTime: "@timestamp",
+			log.FieldKeyMsg:  "message",
+		},
+	})
+	log.SetLevel(log.TraceLevel)
+
+	file, err := os.OpenFile("out.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err == nil {
+		log.SetOutput(file)
+	}
+	defer file.Close()
+
+	log.Info("athlete service started")
+
 	service.Init(client)
 	controller.Run()
 

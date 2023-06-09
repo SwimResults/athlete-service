@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/swimresults/athlete-service/model"
 	"github.com/swimresults/service-core/misc"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,9 +15,11 @@ import (
 )
 
 var athleteCollection *mongo.Collection
+var athleteLogFields log.Fields
 
 func athleteService(database *mongo.Database) {
 	athleteCollection = database.Collection("athlete")
+	athleteLogFields = log.Fields{"service": "athlete"}
 }
 
 func getAthletesByBsonDocument(d interface{}) ([]model.Athlete, error) {
@@ -162,6 +165,9 @@ func RemoveAthleteById(id primitive.ObjectID) error {
 	if err != nil {
 		return err
 	}
+
+	fields := log.Fields{"athlete_id": id}
+	log.WithFields(athleteLogFields).WithFields(fields).Info("athlete deleted")
 	return nil
 }
 
@@ -184,6 +190,9 @@ func AddAthlete(athlete model.Athlete) (model.Athlete, error) {
 		return model.Athlete{}, err
 	}
 
+	fields := log.Fields{"athlete": athlete}
+	log.WithFields(athleteLogFields).WithFields(fields).Info("athlete added")
+
 	return GetAthleteById(r.InsertedID.(primitive.ObjectID))
 }
 
@@ -203,6 +212,9 @@ func AddParticipation(id primitive.ObjectID, meetId string) (model.Athlete, erro
 	if err != nil {
 		return model.Athlete{}, err
 	}
+
+	fields := log.Fields{"athlete": athlete, "meet_id": meetId}
+	log.WithFields(athleteLogFields).WithFields(fields).Info("participation added to athlete")
 
 	return GetAthleteById(athlete.Identifier)
 }
@@ -295,6 +307,9 @@ func ImportAthlete(athlete model.Athlete, meetId string) (*model.Athlete, bool, 
 		return nil, !found, err
 	}
 
+	fields := log.Fields{"athlete": existing, "created": !found}
+	log.WithFields(athleteLogFields).WithFields(fields).Info("athlete imported")
+
 	return &existing, !found, nil
 
 	// if dsv_id, search by dsv_id (dsv_id '==')
@@ -332,6 +347,9 @@ func UpdateAthlete(athlete model.Athlete) (model.Athlete, error) {
 	if err != nil {
 		return model.Athlete{}, err
 	}
+
+	fields := log.Fields{"athlete": athlete}
+	log.WithFields(athleteLogFields).WithFields(fields).Info("athlete updated")
 
 	return GetAthleteById(athlete.Identifier)
 }
