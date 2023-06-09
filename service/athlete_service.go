@@ -19,7 +19,7 @@ var athleteLogFields log.Fields
 
 func athleteService(database *mongo.Database) {
 	athleteCollection = database.Collection("athlete")
-	athleteLogFields = log.Fields{"service": "athlete"}
+	athleteLogFields = log.Fields{"sr_service": "athlete"}
 }
 
 func getAthletesByBsonDocument(d interface{}) ([]model.Athlete, error) {
