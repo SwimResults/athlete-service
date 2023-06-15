@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/sirupsen/logrus v1.9.3
-	github.com/swimresults/service-core v0.3.1
+	github.com/swimresults/service-core v0.4.0
 	go.mongodb.org/mongo-driver v1.10.0
 )
 

@@ -134,7 +134,7 @@ func GetAthleteByDsvId(dsvId int) (model.Athlete, error) {
 }
 
 func GetAthleteByNameAndYear(name string, year int) (model.Athlete, error) {
-	if hasComma, first, last := extractNames(name); hasComma {
+	if hasComma, first, last := misc.ExtractNames(name); hasComma {
 		name = first + " " + last
 	}
 
@@ -182,7 +182,7 @@ func AddAthlete(athlete model.Athlete) (model.Athlete, error) {
 
 	athlete.TeamId = athlete.Team.Identifier
 
-	if hasComma, first, last := extractNames(athlete.Name); hasComma {
+	if hasComma, first, last := misc.ExtractNames(athlete.Name); hasComma {
 		athlete.Name = first + " " + last
 		athlete.Firstname = first
 		athlete.Lastname = last
@@ -262,7 +262,7 @@ func ImportAthlete(athlete model.Athlete, meetId string) (*model.Athlete, bool, 
 
 		changed := false
 		if existing.Firstname == "" || existing.Lastname == "" {
-			if hasNames, first, last := extractNames(athlete.Name); hasNames {
+			if hasNames, first, last := misc.ExtractNames(athlete.Name); hasNames {
 				existing.Firstname = first
 				existing.Lastname = last
 				changed = true
@@ -340,7 +340,7 @@ func UpdateAthlete(athlete model.Athlete) (model.Athlete, error) {
 
 	athlete.TeamId = athlete.Team.Identifier
 
-	if hasComma, first, last := extractNames(athlete.Name); hasComma {
+	if hasComma, first, last := misc.ExtractNames(athlete.Name); hasComma {
 		athlete.Name = first + " " + last
 		athlete.Firstname = first
 		athlete.Lastname = last
