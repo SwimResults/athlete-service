@@ -133,15 +133,20 @@ func GetAthleteByDsvId(dsvId int) (model.Athlete, error) {
 	return model.Athlete{}, errors.New("no entry with given dsv_id found")
 }
 
-func GetAthleteByNameAndTeamAndYear(name string, team string, year int) (model.Athlete, error) {
+func GetAthleteByNameAndYear(name string, year int) (model.Athlete, error) {
 	if hasComma, first, last := extractNames(name); hasComma {
 		name = first + " " + last
 	}
 
 	athletes, err := getAthletesByBsonDocument(bson.M{
-		"$or": []interface{}{
-			bson.M{"name": bson.M{"$regex": name, "$options": "i"}},
-			bson.M{"alias": bson.M{"$regex": misc.Aliasify(name), "$options": "i"}},
+		"$and": []interface{}{
+			bson.M{"year": year},
+			bson.M{
+				"$or": []interface{}{
+					bson.M{"name": bson.M{"$regex": name, "$options": "i"}},
+					bson.M{"alias": bson.M{"$regex": misc.Aliasify(name), "$options": "i"}},
+				},
+			},
 		},
 	})
 	if err != nil {
@@ -152,7 +157,7 @@ func GetAthleteByNameAndTeamAndYear(name string, team string, year int) (model.A
 		return athletes[0], nil
 	}
 
-	fmt.Printf("no athlete with given name '%s', team '%s' and year %d found\n", name, team, year)
+	fmt.Printf("no athlete with given name '%s' and year %d found\n", name, year)
 	return model.Athlete{}, errors.New("no entry found")
 }
 
@@ -241,7 +246,7 @@ func ImportAthlete(athlete model.Athlete, meetId string) (*model.Athlete, bool, 
 	}
 
 	if !found {
-		existing, err = GetAthleteByNameAndTeamAndYear(athlete.Name, athlete.Team.Name, athlete.Year)
+		existing, err = GetAthleteByNameAndYear(athlete.Name, athlete.Year)
 
 		if err != nil {
 			if err.Error() != "no entry found" {

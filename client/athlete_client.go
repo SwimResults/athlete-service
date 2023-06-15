@@ -7,6 +7,7 @@ import (
 	"github.com/swimresults/athlete-service/model"
 	"github.com/swimresults/service-core/client"
 	"net/http"
+	"strconv"
 )
 
 type AthleteClient struct {
@@ -15,6 +16,33 @@ type AthleteClient struct {
 
 func NewAthleteClient(url string) *AthleteClient {
 	return &AthleteClient{apiUrl: url}
+}
+
+func (c *AthleteClient) GetAthleteByNameAndYear(name string, year int) (*model.Athlete, error) {
+	fmt.Printf("request '%s'\n", c.apiUrl+"athlete/name_year?name="+name+"&year="+strconv.Itoa(year))
+
+	params := map[string]string{
+		"name": name,
+		"year": strconv.Itoa(year),
+	}
+
+	res, err := client.Get(c.apiUrl, "athlete/name_year", params)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("GetAthleteByNameAndYear received error: %d\n", res.StatusCode)
+	}
+
+	athlete := &model.Athlete{}
+	err = json.NewDecoder(res.Body).Decode(athlete)
+	if err != nil {
+		return nil, err
+	}
+
+	return athlete, nil
 }
 
 func (c *AthleteClient) ImportAthlete(athlete model.Athlete, meeting string) (*model.Athlete, bool, error) {

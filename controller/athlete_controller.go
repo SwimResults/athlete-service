@@ -7,13 +7,16 @@ import (
 	"github.com/swimresults/athlete-service/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"strconv"
 )
 
 func athleteController() {
 	router.GET("/athlete", getAthletes)
 	router.GET("/athlete/:id", getAthlete)
+	router.GET("/athlete/name_year", getAthleteByNameAndYear)
 	router.GET("/athlete/meet/:meet_id", getAthletesByMeeting)
 	router.GET("/athlete/team/:team_id", getAthletesByTeam)
+
 	router.DELETE("/athlete/:id", removeAthlete)
 	router.POST("/athlete", addAthlete)
 	router.POST("/athlete/import", importAthlete)
@@ -74,6 +77,27 @@ func getAthlete(c *gin.Context) {
 	}
 
 	athlete, err := service.GetAthleteById(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, athlete)
+}
+
+func getAthleteByNameAndYear(c *gin.Context) {
+	name := c.Query("name")
+	if name == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given name was empty"})
+		return
+	}
+	year, err := strconv.Atoi(c.Query("year"))
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	athlete, err := service.GetAthleteByNameAndYear(name, year)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
