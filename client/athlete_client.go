@@ -18,7 +18,7 @@ func NewAthleteClient(url string) *AthleteClient {
 	return &AthleteClient{apiUrl: url}
 }
 
-func (c *AthleteClient) GetAthleteByNameAndYear(name string, year int) (*model.Athlete, error) {
+func (c *AthleteClient) GetAthleteByNameAndYear(name string, year int) (*model.Athlete, bool, error) {
 	fmt.Printf("request '%s'\n", c.apiUrl+"athlete/name_year?name="+name+"&year="+strconv.Itoa(year))
 
 	params := map[string]string{
@@ -28,21 +28,24 @@ func (c *AthleteClient) GetAthleteByNameAndYear(name string, year int) (*model.A
 
 	res, err := client.Get(c.apiUrl, "athlete/name_year", params)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("GetAthleteByNameAndYear received error: %d\n", res.StatusCode)
+		if res.StatusCode == http.StatusNotFound {
+			return nil, false, nil
+		}
+		return nil, false, fmt.Errorf("GetAthleteByNameAndYear received error: %d\n", res.StatusCode)
 	}
 
 	athlete := &model.Athlete{}
 	err = json.NewDecoder(res.Body).Decode(athlete)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
-	return athlete, nil
+	return athlete, true, nil
 }
 
 func (c *AthleteClient) ImportAthlete(athlete model.Athlete, meeting string) (*model.Athlete, bool, error) {
