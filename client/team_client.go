@@ -40,3 +40,32 @@ func (c *TeamClient) ImportTeam(team model.Team, meeting string) (*model.Team, b
 	}
 	return newTeam, res.StatusCode == http.StatusCreated, nil
 }
+
+func (c *TeamClient) GetTeamByName(name string) (*model.Team, bool, error) {
+	fmt.Printf("request '%s'\n", c.apiUrl+"team/name?name="+name)
+
+	params := map[string]string{
+		"name": name,
+	}
+
+	res, err := client.Get(c.apiUrl, "team/name", params)
+	if err != nil {
+		return nil, false, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			return nil, false, nil
+		}
+		return nil, false, fmt.Errorf("GetTeamByName received error: %d\n", res.StatusCode)
+	}
+
+	team := &model.Team{}
+	err = json.NewDecoder(res.Body).Decode(team)
+	if err != nil {
+		return nil, false, err
+	}
+
+	return team, true, nil
+}

@@ -293,7 +293,7 @@ func ImportAthlete(athlete model.Athlete, meetId string) (*model.Athlete, bool, 
 		if athlete.Team.DsvId != 0 {
 			team, err = GetTeamByDsvId(athlete.Team.DsvId)
 		} else {
-			team, err = getTeamByName(athlete.Team.Name)
+			team, err = GetTeamByName(athlete.Team.Name)
 		}
 		if err != nil {
 			return nil, true, err
@@ -319,7 +319,7 @@ func ImportAthlete(athlete model.Athlete, meetId string) (*model.Athlete, bool, 
 
 	// if dsv_id, search by dsv_id (dsv_id '==')
 	// -> not found
-	// 		search by name, team and year (name aliasified in aliases; team (getTeamByName), year '==')
+	// 		search by name, team and year (name aliasified in aliases; team (GetTeamByName), year '==')
 	//
 	// 		-> not found:	create
 	//						add participation

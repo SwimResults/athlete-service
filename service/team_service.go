@@ -101,7 +101,7 @@ func GetTeamByDsvId(dsvId int) (model.Team, error) {
 	return teams[0], nil
 }
 
-func getTeamByName(name string) (model.Team, error) {
+func GetTeamByName(name string) (model.Team, error) {
 	teams, err := getTeamsByBsonDocument(
 		bson.M{
 			"$or": []interface{}{
@@ -155,7 +155,7 @@ func AddTeamParticipation(id primitive.ObjectID, meetId string) (model.Team, err
 }
 
 func ImportTeam(team model.Team, meetId string) (model.Team, bool, error) {
-	existingTeam, err := getTeamByName(team.Name)
+	existingTeam, err := GetTeamByName(team.Name)
 
 	if err != nil {
 		if err.Error() == "no team with given name found" {
