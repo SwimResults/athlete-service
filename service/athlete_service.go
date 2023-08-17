@@ -90,6 +90,24 @@ func GetAthletesByMeetingId(id string, paging Paging) ([]model.Athlete, error) {
 	}, paging.getPaginatedOpts())
 }
 
+func GetAthletesByTeamAndMeeting(id primitive.ObjectID, meeting string, paging Paging) ([]model.Athlete, error) {
+	return getAthletesByBsonDocumentWithOptions(bson.M{
+		"$and": []interface{}{
+			bson.M{"participation": meeting},
+			bson.M{"team_id": id},
+			bson.M{
+				"$or": []interface{}{
+					bson.M{"name": bson.M{"$regex": paging.Query, "$options": "i"}},
+					bson.M{"firstname": bson.M{"$regex": paging.Query, "$options": "i"}},
+					bson.M{"lastname": bson.M{"$regex": paging.Query, "$options": "i"}},
+					bson.M{"dsv_id": bson.M{"$regex": paging.Query, "$options": "i"}},
+					bson.M{"alias": bson.M{"$regex": paging.Query, "$options": "i"}},
+				},
+			},
+		},
+	}, paging.getPaginatedOpts())
+}
+
 func GetAthletesByTeamId(id primitive.ObjectID, paging Paging) ([]model.Athlete, error) {
 	return getAthletesByBsonDocumentWithOptions(bson.M{
 		"$and": []interface{}{

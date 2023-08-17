@@ -16,6 +16,7 @@ func athleteController() {
 	router.GET("/athlete/name_year", getAthleteByNameAndYear)
 	router.GET("/athlete/meet/:meet_id", getAthletesByMeeting)
 	router.GET("/athlete/team/:team_id", getAthletesByTeam)
+	router.GET("/athlete/team/:team_id/meet/:meet_id", getAthletesByTeamAndMeeting)
 
 	router.DELETE("/athlete/:id", removeAthlete)
 	router.POST("/athlete", addAthlete)
@@ -61,6 +62,28 @@ func getAthletesByTeam(c *gin.Context) {
 	}
 
 	athletes, err := service.GetAthletesByTeamId(id, extractPagingParams(c))
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, athletes)
+}
+
+func getAthletesByTeamAndMeeting(c *gin.Context) {
+	id, convErr := primitive.ObjectIDFromHex(c.Param("team_id"))
+	if convErr != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given team_id was not of type ObjectID"})
+		return
+	}
+
+	meeting := c.Param("meet_id")
+	if meeting == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given meet_id is empty"})
+		return
+	}
+
+	athletes, err := service.GetAthletesByTeamAndMeeting(id, meeting, extractPagingParams(c))
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
