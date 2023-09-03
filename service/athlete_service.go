@@ -179,6 +179,25 @@ func GetAthleteByNameAndYear(name string, year int) (model.Athlete, error) {
 	return model.Athlete{}, errors.New("no entry found")
 }
 
+func GetAthleteByAliasAndYear(alias string, year int) (model.Athlete, error) {
+	athletes, err := getAthletesByBsonDocument(bson.M{
+		"$and": []interface{}{
+			bson.M{"year": year},
+			bson.M{"alias": bson.M{"$regex": alias, "$options": "i"}},
+		},
+	})
+	if err != nil {
+		return model.Athlete{}, err
+	}
+
+	if len(athletes) > 0 {
+		return athletes[0], nil
+	}
+
+	fmt.Printf("no athlete with given alias '%s' and year %d found\n", alias, year)
+	return model.Athlete{}, errors.New("no entry found")
+}
+
 func RemoveAthleteById(id primitive.ObjectID) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

@@ -14,6 +14,7 @@ func athleteController() {
 	router.GET("/athlete", getAthletes)
 	router.GET("/athlete/:id", getAthlete)
 	router.GET("/athlete/name_year", getAthleteByNameAndYear)
+	router.GET("/athlete/alias_year", getAthleteByAliasAndYear)
 	router.GET("/athlete/meet/:meet_id", getAthletesByMeeting)
 	router.GET("/athlete/team/:team_id", getAthletesByTeam)
 	router.GET("/athlete/team/:team_id/meet/:meet_id", getAthletesByTeamAndMeeting)
@@ -121,6 +122,27 @@ func getAthleteByNameAndYear(c *gin.Context) {
 	}
 
 	athlete, err := service.GetAthleteByNameAndYear(name, year)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, athlete)
+}
+
+func getAthleteByAliasAndYear(c *gin.Context) {
+	name := c.Query("alias")
+	if name == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given alias was empty"})
+		return
+	}
+	year, err := strconv.Atoi(c.Query("year"))
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	athlete, err := service.GetAthleteByAliasAndYear(name, year)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return

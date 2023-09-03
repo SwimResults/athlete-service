@@ -14,6 +14,7 @@ func teamController() {
 	router.GET("/team/:id", getTeam)
 	router.GET("/team/meet/:meet_id", getTeamsByMeeting)
 	router.GET("/team/name", getTeamByName)
+	router.GET("/team/alias", getTeamByAlias)
 	router.POST("/team", addTeam)
 	router.POST("/team/import", importTeam)
 
@@ -71,6 +72,22 @@ func getTeamByName(c *gin.Context) {
 	}
 
 	team, err := service.GetTeamByName(name)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, team)
+}
+
+func getTeamByAlias(c *gin.Context) {
+	name := c.Query("alias")
+	if name == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given alias was empty"})
+		return
+	}
+
+	team, err := service.GetTeamByAlias(name)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return

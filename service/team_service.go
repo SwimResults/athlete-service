@@ -120,6 +120,24 @@ func GetTeamByName(name string) (model.Team, error) {
 	return teams[0], nil
 }
 
+func GetTeamByAlias(alias string) (model.Team, error) {
+	teams, err := getTeamsByBsonDocument(
+		bson.M{
+			"$or": []interface{}{
+				bson.M{"name": bson.M{"$regex": alias, "$options": "i"}},
+				bson.M{"alias": bson.M{"$regex": alias, "$options": "i"}},
+			},
+		})
+	if err != nil {
+		return model.Team{}, err
+	}
+	if len(teams) < 1 {
+		fmt.Printf("no team with given alias '%s' found\n", alias)
+		return model.Team{}, errors.New("no team with given alias found")
+	}
+	return teams[0], nil
+}
+
 func AddTeam(team model.Team) (model.Team, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
