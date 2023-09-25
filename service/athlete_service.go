@@ -60,6 +60,18 @@ func getAthletesByBsonDocumentWithOptions(d interface{}, fOps options.FindOption
 	return athletes, nil
 }
 
+func GetAthletesAmount() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	opts := options.Count().SetHint("_id_")
+	count, err := athleteCollection.CountDocuments(ctx, bson.D{}, opts)
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
+}
+
 func GetAthletes(paging Paging) ([]model.Athlete, error) {
 	return getAthletesByBsonDocumentWithOptions(
 		bson.M{

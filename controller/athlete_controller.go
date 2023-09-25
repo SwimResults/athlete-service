@@ -12,6 +12,9 @@ import (
 
 func athleteController() {
 	router.GET("/athlete", getAthletes)
+
+	router.GET("/athlete/amount", getAthletesAmount)
+
 	router.GET("/athlete/:id", getAthlete)
 	router.GET("/athlete/name_year", getAthleteByNameAndYear)
 	router.GET("/athlete/alias_year", getAthleteByAliasAndYear)
@@ -37,6 +40,16 @@ func getAthletes(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, athletes)
+}
+
+func getAthletesAmount(c *gin.Context) {
+	starts, err := service.GetAthletesAmount()
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, starts)
 }
 
 func getAthletesByMeeting(c *gin.Context) {
