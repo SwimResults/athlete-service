@@ -72,6 +72,18 @@ func GetAthletesAmount() (int, error) {
 	return int(count), nil
 }
 
+func GetAthletesAmountByMeeting(meeting string) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	opts := options.Count().SetHint("_id_")
+	count, err := athleteCollection.CountDocuments(ctx, bson.D{{"participation", meeting}}, opts)
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
+}
+
 func GetAthletes(paging Paging) ([]model.Athlete, error) {
 	return getAthletesByBsonDocumentWithOptions(
 		bson.M{
