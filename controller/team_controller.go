@@ -12,6 +12,10 @@ import (
 func teamController() {
 	router.GET("/team", getTeams)
 	router.GET("/team/:id", getTeam)
+
+	router.GET("/team/amount", getTeamsAmount)
+	router.GET("/team/meet/:meet_id/amount", getTeamsAmountByMeeting)
+
 	router.GET("/team/meet/:meet_id", getTeamsByMeeting)
 	router.GET("/team/name", getTeamByName)
 	router.GET("/team/alias", getTeamByAlias)
@@ -46,6 +50,32 @@ func getTeam(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, team)
+}
+
+func getTeamsAmount(c *gin.Context) {
+	starts, err := service.GetTeamsAmount()
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, starts)
+}
+
+func getTeamsAmountByMeeting(c *gin.Context) {
+	meeting := c.Param("meet_id")
+	if meeting == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given meet_id is empty"})
+		return
+	}
+
+	starts, err := service.GetTeamsAmountByMeeting(meeting)
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, starts)
 }
 
 func getTeamsByMeeting(c *gin.Context) {

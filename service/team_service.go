@@ -62,6 +62,30 @@ func GetTeams(paging Paging) ([]model.Team, error) {
 		}, paging.getPaginatedOpts())
 }
 
+func GetTeamsAmount() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	opts := options.Count().SetHint("_id_")
+	count, err := teamCollection.CountDocuments(ctx, bson.D{}, opts)
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
+}
+
+func GetTeamsAmountByMeeting(meeting string) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	opts := options.Count().SetHint("_id_")
+	count, err := teamCollection.CountDocuments(ctx, bson.D{{"participation", meeting}}, opts)
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
+}
+
 func GetTeamsByMeeting(id string, paging Paging) ([]model.Team, error) {
 	return getTeamsByBsonDocumentWithOptions(bson.M{
 		"$and": []interface{}{
