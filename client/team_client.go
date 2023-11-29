@@ -69,3 +69,28 @@ func (c *TeamClient) GetTeamByName(name string) (*model.Team, bool, error) {
 
 	return team, true, nil
 }
+
+func (c *TeamClient) GetTeamsByMeeting(meeting string) (*[]model.Team, bool, error) {
+	fmt.Printf("request '%s'\n", c.apiUrl+"team/meet/"+meeting)
+
+	res, err := client.Get(c.apiUrl, "team/meet/"+meeting, nil)
+	if err != nil {
+		return nil, false, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			return nil, false, nil
+		}
+		return nil, false, fmt.Errorf("GetTeamsByMeeting received error: %d\n", res.StatusCode)
+	}
+
+	teams := &[]model.Team{}
+	err = json.NewDecoder(res.Body).Decode(teams)
+	if err != nil {
+		return nil, false, err
+	}
+
+	return teams, true, nil
+}
