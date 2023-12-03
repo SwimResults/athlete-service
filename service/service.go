@@ -21,7 +21,7 @@ func Init(c *mongo.Client) {
 
 func PingDatabase() bool {
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*100)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*500)
 	defer cancel()
 
 	err := client.Ping(ctx, readpref.Primary())
