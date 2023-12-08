@@ -10,6 +10,9 @@ RUN mkdir /app/logs
 
 ENV SR_ATHLETE_PORT=8080
 
+RUN apk add tzdata
+RUN ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+
 EXPOSE 8080
 
 ENTRYPOINT [ "./service" ]
