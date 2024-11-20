@@ -20,7 +20,6 @@ func athleteController() {
 	router.GET("/athlete/name_year", getAthleteByNameAndYear)
 	router.GET("/athlete/alias_year", getAthleteByAliasAndYear)
 	router.GET("/athlete/meet/:meet_id", getAthletesByMeeting)
-	router.GET("/athlete/meet/:meet_id/id-list/", getAthletesByMeetingAndIdList)
 	router.GET("/athlete/team/:team_id", getAthletesByTeam)
 	router.GET("/athlete/team/:team_id/meet/:meet_id", getAthletesByTeamAndMeeting)
 
@@ -29,6 +28,8 @@ func athleteController() {
 	router.POST("/athlete/import", importAthlete)
 	router.POST("/athlete/participation", addParticipation)
 	router.PUT("/athlete", updateAthlete)
+
+	router.POST("/athlete/meet/:meet_id/id-list/", getAthletesByMeetingAndIdList)
 
 	router.HEAD("/athlete", getAthletes)
 	router.HEAD("/athlete/:id", getAthlete)
