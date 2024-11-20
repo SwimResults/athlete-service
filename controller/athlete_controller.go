@@ -29,7 +29,7 @@ func athleteController() {
 	router.POST("/athlete/participation", addParticipation)
 	router.PUT("/athlete", updateAthlete)
 
-	router.POST("/athlete/meet/:meet_id/id-list/", getAthletesByMeetingAndIdList)
+	router.POST("/athlete/meet/:meet_id/id_list", getAthletesByMeetingAndIdList)
 
 	router.HEAD("/athlete", getAthletes)
 	router.HEAD("/athlete/:id", getAthlete)
