@@ -26,7 +26,7 @@ func (c *AthleteClient) GetAthleteByNameAndYear(name string, year int) (*model.A
 		"year": strconv.Itoa(year),
 	}
 
-	res, err := client.Get(c.apiUrl, "athlete/name_year", params)
+	res, err := client.Get(c.apiUrl, "athlete/name_year", params, nil)
 	if err != nil {
 		return nil, false, err
 	}
@@ -54,7 +54,7 @@ func (c *AthleteClient) ImportAthlete(athlete model.Athlete, meeting string) (*m
 		Athlete: athlete,
 	}
 
-	res, err := client.Post(c.apiUrl, "athlete/import", request)
+	res, err := client.Post(c.apiUrl, "athlete/import", request, nil)
 	if err != nil {
 		return nil, false, err
 	}
