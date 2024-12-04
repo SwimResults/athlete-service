@@ -18,6 +18,31 @@ func NewAthleteClient(url string) *AthleteClient {
 	return &AthleteClient{apiUrl: url}
 }
 
+func (c *AthleteClient) GetAthletesByMeeting(meeting string) ([]model.Athlete, error) {
+	fmt.Printf("request '%s'\n", c.apiUrl+"athlete/meet/"+meeting)
+
+	res, err := client.Get(c.apiUrl, "athlete/meet/"+meeting, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("GetAthletesByMeeting received error: %d\n", res.StatusCode)
+	}
+
+	var athletes []model.Athlete
+	err = json.NewDecoder(res.Body).Decode(&athletes)
+	if err != nil {
+		return nil, err
+	}
+
+	return athletes, nil
+}
+
 func (c *AthleteClient) GetAthleteByNameAndYear(name string, year int) (*model.Athlete, bool, error) {
 	fmt.Printf("request '%s'\n", c.apiUrl+"athlete/name_year?name="+name+"&year="+strconv.Itoa(year))
 
