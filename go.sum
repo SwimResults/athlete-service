@@ -76,6 +76,8 @@ github.com/swimresults/service-core v0.5.0 h1:zF+/X9KWsVXgXdDfNFEKeryMGAxiXhstnK
 github.com/swimresults/service-core v0.5.0/go.mod h1:PnaIA/xlyf4GpsYHE7yj5HDFdbiq/VSEvqgj27VfqTQ=
 github.com/swimresults/service-core v0.6.1 h1:f5HLfmvHRMBMKACpTZ/CgatHlIVAc2xWracwmLMnKb0=
 github.com/swimresults/service-core v0.6.1/go.mod h1:PnaIA/xlyf4GpsYHE7yj5HDFdbiq/VSEvqgj27VfqTQ=
+github.com/swimresults/service-core v0.6.2 h1:eBUvXJMbCdTbo6HCbPHuN8W0K3UTlSwoG/GwYMbXt/s=
+github.com/swimresults/service-core v0.6.2/go.mod h1:PnaIA/xlyf4GpsYHE7yj5HDFdbiq/VSEvqgj27VfqTQ=
 github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=
