@@ -29,6 +29,8 @@ func athleteController() {
 	router.POST("/athlete/participation", addParticipation)
 	router.PUT("/athlete", updateAthlete)
 
+	router.POST("/athlete/meet/:meet_id/id_list", getAthletesByMeetingAndIdList)
+
 	router.HEAD("/athlete", getAthletes)
 	router.HEAD("/athlete/:id", getAthlete)
 }
@@ -77,6 +79,28 @@ func getAthletesByMeeting(c *gin.Context) {
 	}
 
 	athletes, err := service.GetAthletesByMeetingId(id, extractPagingParams(c))
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, athletes)
+}
+
+func getAthletesByMeetingAndIdList(c *gin.Context) {
+	id := c.Param("meet_id")
+	if id == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "given meet_id is empty"})
+		return
+	}
+
+	var data dto.AthleteIdList
+	if err := c.BindJSON(&data); err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	athletes, err := service.GetAthletesByMeetingAndIdList(id, data.Athletes, extractPagingParams(c))
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

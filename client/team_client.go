@@ -23,7 +23,7 @@ func (c *TeamClient) ImportTeam(team model.Team, meeting string) (*model.Team, b
 		Team:    team,
 	}
 
-	res, err := client.Post(c.apiUrl, "team/import", request)
+	res, err := client.Post(c.apiUrl, "team/import", request, nil)
 	if err != nil {
 		return nil, false, err
 	}
@@ -48,7 +48,7 @@ func (c *TeamClient) GetTeamByName(name string) (*model.Team, bool, error) {
 		"name": name,
 	}
 
-	res, err := client.Get(c.apiUrl, "team/name", params)
+	res, err := client.Get(c.apiUrl, "team/name", params, nil)
 	if err != nil {
 		return nil, false, err
 	}
@@ -73,7 +73,7 @@ func (c *TeamClient) GetTeamByName(name string) (*model.Team, bool, error) {
 func (c *TeamClient) GetTeamsByMeeting(meeting string) (*[]model.Team, bool, error) {
 	fmt.Printf("request '%s'\n", c.apiUrl+"team/meet/"+meeting)
 
-	res, err := client.Get(c.apiUrl, "team/meet/"+meeting, nil)
+	res, err := client.Get(c.apiUrl, "team/meet/"+meeting, nil, nil)
 	if err != nil {
 		return nil, false, err
 	}
