@@ -27,4 +27,4 @@
 
 ---------
 
-© Copyright 2022-2023 - SwimResults & Konrad Weiß
+© Copyright 2022-2025 - SwimResults & Konrad Weiß
