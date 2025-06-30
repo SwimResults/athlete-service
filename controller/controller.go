@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/swimresults/athlete-service/service"
+	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"net/http"
 	"os"
 	"strconv"
@@ -19,6 +20,11 @@ func Run() {
 		fmt.Println("no application port given! Please set SR_ATHLETE_PORT.")
 		return
 	}
+
+	p := ginprometheus.NewWithConfig(ginprometheus.Config{
+		Subsystem: "gin",
+	})
+	p.Use(router)
 
 	athleteController()
 	teamController()
