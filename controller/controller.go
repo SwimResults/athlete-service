@@ -28,6 +28,7 @@ func Run() {
 
 	athleteController()
 	teamController()
+	certificateController()
 
 	router.GET("/actuator", actuator)
 
