@@ -120,6 +120,9 @@ func AddCertificate(certificate model.Certificate) (model.Certificate, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	certificate.AddedAt = time.Now()
+	certificate.UpdatedAt = time.Now()
+
 	r, err := certificateCollection.InsertOne(ctx, certificate)
 	if err != nil {
 		return model.Certificate{}, err
@@ -140,6 +143,8 @@ func ImportCertificate(certificate model.Certificate) (*model.Certificate, bool,
 func UpdateCertificate(certificate model.Certificate) (model.Certificate, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	certificate.UpdatedAt = time.Now()
 
 	_, err := certificateCollection.ReplaceOne(ctx, bson.D{{"_id", certificate.Identifier}}, certificate)
 	if err != nil {
