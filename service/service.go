@@ -17,6 +17,7 @@ func Init(c *mongo.Client) {
 
 	athleteService(database)
 	teamService(database)
+	certificateService(database)
 }
 
 func PingDatabase() bool {
