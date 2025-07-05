@@ -164,19 +164,18 @@ func updateCertificate(c *gin.Context) {
 }
 
 func importCertificate(c *gin.Context) {
-	var certificate *model.Certificate
 	var request dto.ImportCertificateRequestDto
 	if err := c.BindJSON(&request); err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	certificate, err := service.ImportCertificate(request)
+	cert, err := service.ImportCertificate(request)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	c.IndentedJSON(http.StatusCreated, certificate)
+	c.IndentedJSON(http.StatusCreated, cert)
 
 }
