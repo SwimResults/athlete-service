@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	log "github.com/sirupsen/logrus"
+	"github.com/swimresults/athlete-service/dto"
 	"github.com/swimresults/athlete-service/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -134,10 +135,18 @@ func AddCertificate(certificate model.Certificate) (model.Certificate, error) {
 	return GetCertificateById(r.InsertedID.(primitive.ObjectID))
 }
 
-func ImportCertificate(certificate model.Certificate) (*model.Certificate, bool, error) {
+func ImportCertificate(request dto.ImportCertificateRequestDto) (model.Certificate, error) {
+	certificate := model.Certificate{
+		Name:      request.Name,
+		AthleteId: request.AthleteId,
+		Meeting:   request.Meeting,
+		Path:      request.Path,
+		Hidden:    false,
+		Downloads: 0,
+		Ordering:  0,
+	}
 
-	return nil, false, nil
-
+	return AddCertificate(certificate)
 }
 
 func UpdateCertificate(certificate model.Certificate) (model.Certificate, error) {
