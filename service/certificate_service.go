@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"strings"
 	"time"
 )
 
@@ -136,6 +137,10 @@ func AddCertificate(certificate model.Certificate) (model.Certificate, error) {
 }
 
 func ImportCertificate(request dto.ImportCertificateRequestDto) (model.Certificate, error) {
+	if request.Path != "" && !strings.HasPrefix(request.Path, "/") {
+		request.Path = "/" + request.Path
+	}
+
 	certificate := model.Certificate{
 		Name:      request.Name,
 		AthleteId: request.AthleteId,
