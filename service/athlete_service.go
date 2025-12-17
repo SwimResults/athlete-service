@@ -305,7 +305,7 @@ func AddParticipation(id primitive.ObjectID, meetId string) (model.Athlete, erro
 
 func ImportAthlete(athlete model.Athlete, meetId string) (*model.Athlete, bool, error) {
 
-	if athlete.Team.Name == "" && athlete.Team.DsvId == 0 {
+	if athlete.Team.Name == "" && athlete.Team.DsvId == 0 && athlete.Team.Identifier.IsZero() {
 		return nil, false, fmt.Errorf("no team set in import")
 	}
 
@@ -369,7 +369,9 @@ func ImportAthlete(athlete model.Athlete, meetId string) (*model.Athlete, bool, 
 		athlete.FirstMeeting = meetId
 
 		var team model.Team
-		if athlete.Team.DsvId != 0 {
+		if !athlete.Team.Identifier.IsZero() {
+			team, err = GetTeamById(athlete.Team.Identifier)
+		} else if athlete.Team.DsvId != 0 {
 			team, err = GetTeamByDsvId(athlete.Team.DsvId)
 		} else {
 			team, err = GetTeamByName(athlete.Team.Name)
