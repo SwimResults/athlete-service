@@ -292,6 +292,7 @@ func importAthlete(c *gin.Context) {
 	athlete, r, err := service.ImportAthlete(request.Athlete, request.Meeting)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		println(err.Error())
 		return
 	}
 
