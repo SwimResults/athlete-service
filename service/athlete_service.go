@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/swimresults/athlete-service/model"
 	"github.com/swimresults/service-core/misc"
@@ -11,7 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"time"
 )
 
 var athleteCollection *mongo.Collection
@@ -354,6 +355,14 @@ func ImportAthlete(athlete model.Athlete, meetId string) (*model.Athlete, bool, 
 		if existing.Gender == "" && athlete.Gender != "" {
 			existing.Gender = athlete.Gender
 			changed = true
+		}
+		if !athlete.Team.Identifier.IsZero() && athlete.Team.Identifier != existing.Team.Identifier {
+			team, err := GetTeamById(athlete.Team.Identifier)
+			if err != nil {
+				return nil, true, err
+			}
+
+			athlete.Team.Identifier = team.Identifier
 		}
 
 		if changed {
