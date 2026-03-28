@@ -357,12 +357,15 @@ func ImportAthlete(athlete model.Athlete, meetId string) (*model.Athlete, bool, 
 			changed = true
 		}
 		if !athlete.Team.Identifier.IsZero() && athlete.Team.Identifier != existing.Team.Identifier {
+
 			team, err := GetTeamById(athlete.Team.Identifier)
+			fmt.Printf("updating team for athlete '%s' from '%s' to '%s'\n", athlete.Name, existing.Team.Name, team.Name)
+
 			if err != nil {
 				return nil, true, err
 			}
 
-			athlete.Team.Identifier = team.Identifier
+			existing.Team.Identifier = team.Identifier
 		}
 
 		if changed {
