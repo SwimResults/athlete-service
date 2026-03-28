@@ -366,6 +366,8 @@ func ImportAthlete(athlete model.Athlete, meetId string) (*model.Athlete, bool, 
 			}
 
 			existing.Team.Identifier = team.Identifier
+
+			changed = true
 		}
 
 		if changed {
