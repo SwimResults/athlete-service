@@ -5,6 +5,7 @@ import (
 	"github.com/swimresults/athlete-service/dto"
 	"github.com/swimresults/athlete-service/model"
 	"github.com/swimresults/athlete-service/service"
+	"github.com/swimresults/service-core/security"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
@@ -19,8 +20,8 @@ func teamController() {
 	router.GET("/team/meet/:meet_id", getTeamsByMeeting)
 	router.GET("/team/name", getTeamByName)
 	router.GET("/team/alias", getTeamByAlias)
-	router.POST("/team", addTeam)
-	router.POST("/team/import", importTeam)
+	security.Route(router, "POST", "/team", security.PermissionMeeting, addTeam)
+	security.Route(router, "POST", "/team/import", security.PermissionMeeting, importTeam)
 
 	router.HEAD("/team", getTeams)
 	router.HEAD("/team/:id", getTeam)

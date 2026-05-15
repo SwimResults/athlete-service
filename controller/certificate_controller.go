@@ -5,6 +5,7 @@ import (
 	"github.com/swimresults/athlete-service/dto"
 	"github.com/swimresults/athlete-service/model"
 	"github.com/swimresults/athlete-service/service"
+	"github.com/swimresults/service-core/security"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
@@ -19,10 +20,10 @@ func certificateController() {
 	router.GET("/certificate/athlete/:athlete_id", getCertificatesByAthlete)
 	router.GET("/certificate/athlete/:athlete_id/meet/:meet_id", getCertificatesByAthleteAndMeeting)
 
-	router.DELETE("/certificate/:id", removeCertificate)
-	router.POST("/certificate", addCertificate)
-	router.POST("/certificate/import", importCertificate)
-	router.PUT("/certificate", updateCertificate)
+	security.Route(router, "DELETE", "/certificate/:id", security.PermissionMeeting, removeCertificate)
+	security.Route(router, "POST", "/certificate", security.PermissionMeeting, addCertificate)
+	security.Route(router, "POST", "/certificate/import", security.PermissionMeeting, importCertificate)
+	security.Route(router, "PUT", "/certificate", security.PermissionMeeting, updateCertificate)
 }
 
 func getCertificates(c *gin.Context) {

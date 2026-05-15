@@ -1,13 +1,15 @@
 package controller
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/swimresults/athlete-service/dto"
 	"github.com/swimresults/athlete-service/model"
 	"github.com/swimresults/athlete-service/service"
+	"github.com/swimresults/service-core/security"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"net/http"
-	"strconv"
 )
 
 func athleteController() {
@@ -23,13 +25,13 @@ func athleteController() {
 	router.GET("/athlete/team/:team_id", getAthletesByTeam)
 	router.GET("/athlete/team/:team_id/meet/:meet_id", getAthletesByTeamAndMeeting)
 
-	router.DELETE("/athlete/:id", removeAthlete)
-	router.POST("/athlete", addAthlete)
-	router.POST("/athlete/import", importAthlete)
-	router.POST("/athlete/participation", addParticipation)
-	router.PUT("/athlete", updateAthlete)
+	security.Route(router, "DELETE", "/athlete/:id", security.PermissionMeeting, removeAthlete)
+	security.Route(router, "POST", "/athlete", security.PermissionMeeting, addAthlete)
+	security.Route(router, "POST", "/athlete/import", security.PermissionMeeting, importAthlete)
+	security.Route(router, "POST", "/athlete/participation", security.PermissionMeeting, addParticipation)
+	security.Route(router, "PUT", "/athlete", security.PermissionMeeting, updateAthlete)
 
-	router.POST("/athlete/meet/:meet_id/id_list", getAthletesByMeetingAndIdList)
+	security.Route(router, "POST", "/athlete/meet/:meet_id/id_list", security.PermissionMeeting, getAthletesByMeetingAndIdList)
 
 	router.HEAD("/athlete", getAthletes)
 	router.HEAD("/athlete/:id", getAthlete)
