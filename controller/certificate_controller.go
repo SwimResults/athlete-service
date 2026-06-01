@@ -1,12 +1,14 @@
 package controller
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/swimresults/athlete-service/dto"
 	"github.com/swimresults/athlete-service/model"
 	"github.com/swimresults/athlete-service/service"
+	"github.com/swimresults/service-core/security"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"net/http"
 )
 
 func certificateController() {
@@ -19,10 +21,10 @@ func certificateController() {
 	router.GET("/certificate/athlete/:athlete_id", getCertificatesByAthlete)
 	router.GET("/certificate/athlete/:athlete_id/meet/:meet_id", getCertificatesByAthleteAndMeeting)
 
-	router.DELETE("/certificate/:id", removeCertificate)
-	router.POST("/certificate", addCertificate)
-	router.POST("/certificate/import", importCertificate)
-	router.PUT("/certificate", updateCertificate)
+	security.Route(router, "DELETE", "/certificate/:id", security.PermissionAdmin, removeCertificate)
+	security.Route(router, "POST", "/certificate", security.PermissionAdmin, addCertificate)
+	security.Route(router, "POST", "/certificate/import", security.PermissionAdmin, importCertificate)
+	security.Route(router, "PUT", "/certificate", security.PermissionAdmin, updateCertificate)
 }
 
 func getCertificates(c *gin.Context) {

@@ -7,7 +7,7 @@ toolchain go1.24.4
 require (
 	github.com/gin-gonic/gin v1.10.1
 	github.com/sirupsen/logrus v1.9.3
-	github.com/swimresults/service-core v0.7.0
+	github.com/swimresults/service-core v0.9.3
 	github.com/zsais/go-gin-prometheus v1.0.0
 	go.mongodb.org/mongo-driver v1.17.4
 )
@@ -24,6 +24,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.26.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
