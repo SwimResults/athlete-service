@@ -25,13 +25,13 @@ func athleteController() {
 	router.GET("/athlete/team/:team_id", getAthletesByTeam)
 	router.GET("/athlete/team/:team_id/meet/:meet_id", getAthletesByTeamAndMeeting)
 
-	security.Route(router, "DELETE", "/athlete/:id", security.PermissionMeeting, removeAthlete)
-	security.Route(router, "POST", "/athlete", security.PermissionMeeting, addAthlete)
-	security.Route(router, "POST", "/athlete/import", security.PermissionMeeting, importAthlete)
-	security.Route(router, "POST", "/athlete/participation", security.PermissionMeeting, addParticipation)
-	security.Route(router, "PUT", "/athlete", security.PermissionMeeting, updateAthlete)
+	security.Route(router, "DELETE", "/athlete/:id", security.PermissionAdmin, removeAthlete)
+	security.Route(router, "POST", "/athlete", security.PermissionAdmin, addAthlete)
+	security.Route(router, "POST", "/athlete/import", security.PermissionAdmin, importAthlete)
+	security.Route(router, "POST", "/athlete/participation", security.PermissionAdmin, addParticipation)
+	security.Route(router, "PUT", "/athlete", security.PermissionAdmin, updateAthlete)
 
-	security.Route(router, "POST", "/athlete/meet/:meet_id/id_list", security.PermissionMeeting, getAthletesByMeetingAndIdList)
+	security.Route(router, "POST", "/athlete/meet/:meet_id/id_list", security.PermissionAdmin, getAthletesByMeetingAndIdList)
 
 	router.HEAD("/athlete", getAthletes)
 	router.HEAD("/athlete/:id", getAthlete)
